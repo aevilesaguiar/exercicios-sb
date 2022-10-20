@@ -109,3 +109,146 @@ dentro da sua aplicação tem que refletir que tipo de método você usou. Mas m
 Tecnologia GRAPHQL que é uma alterantiva a uma API do tipo REST.
 GRAPHQL usa para inserir o método POST, para alterar um registro ele usa o método POST
 para excluir ele usa o método POST e para ler ele usa o método GET. 
+
+
+## url - search
+
+https://www.google.com.br/search?q=Linux+Ubuntu&hl=pt  
+                          busca   querie        language
+
+
+## Passar Parametros web service
+
+- através do PathVariable
+
+    @GetMapping("/{id}")
+    public Cliente ObterClientPorId(@PathVariable Long id){
+
+        return new Cliente(id,"Maria","985.963.789-01");
+    }
+
+  - através do @RequestParam
+  http://localhost:8080/clientes?id=123
+  
+      @GetMapping()
+      public Cliente obterClientePorId2(@RequestParam(name="id", defaultValue = "1") Long id){
+      return new Cliente(id, "João Augusto", "111.222.333-4");
+      }
+
+## Padrão MVC
+
+Responsabilidades Model, View, Controller
+
+Model: seria o coração da aplicação, no model vai ter as regras de negócio, as entidades, a camada de acesso a dados
+tudo que pertence a aplicação no que diz respeito a regras de negócios /validação.
+
+View: ela é a camada responsável por renderizar a resposta seja ela em aplicações desktop, seja ela em aplicações web,
+ela é responsável por renderizar a página como resposta a requisição, renderizar a página significa que você vai trabalhar 
+na view com JS, CSS, HTML , trabalhar com algum template engine onde vocês faz includes, laços dentro da sua pagina
+para que você possa representar os dados em uma tabela. Ou seja tudo aquilo que diz respeito a visualizar a sua aplicação, ou 
+seja visualizar as telas está relacionado a camada view. (a resposta, ou seja a página renderizada no browser do usuario).
+
+Controller: a camada controller faz o controle de fluxo da camada de fluxo da aplicação.  O controller faz o intermedio 
+de todo o fluxo, desde pedir para o model informações da base de dados já que ele detém essa lógica, ele detem a camada
+de acesso a dados. O controller seria tipo o coordenador do fluxo da aplicação.
+
+A primeira camada que vai receber a sua requisição é a camada controller, ou seja dentro da sua aplicação a primeira
+camada que vai recepcionar é a camada Controller
+
+
+        BROWSER     ->                 WEB SERVER             ->            APLICAÇÃO     ->    CONTROLLER
+    gerando uma requisição|  essa requisição vai bater no seu web  |  Dentro da aplicação seu  |  
+    a partir de uma url)  |  server, que pode ser um Tomcat,ngx,   |  framework vai saber para |
+                          |  ou apache dependendo da tecnologia,   |   onde ele deve direcionar|  
+                          |  o web server a partir da url ele vai  |                           |
+                          |  saber para qual aplicação ele vai     |                           |
+                          |  direcionar                            |                           |
+
+- Fluxo do Primeiro cenário que não precisa acessar Dados, ou seja não precisa passar pela camada model( que é a camada que se liga ao BD)
+Nesse primeiro cenário estou querendo mostrar uma tela no browser sem que haja necessidade de renderizar a página
+
+
+![](src/main/resources/templates/cap1.png)
+
+O browser gera uma requisição através de uma url, e essa url vai acabar sendo mapeada no momento
+para um controller.Essa requisiçao chega no meu controller, e ele vai analisar que não que não necessita de acesso 
+a dados, eu não preciso validar nenhuma regra, é um sistema simples e vai encaminhar a minha requisição para
+a View , a View vai renderizar a resposta enviada para o browser.
+
+
+- Fluxo do Segundo cenário que  precisa acessar Dados, ou seja precisa passar pela camada model( que é a camada que se liga ao BD)
+
+![](src/main/resources/templates/cap2.png)
+O browser vai gerar um request apartir de uma url, esse request bate no controler, e esse controller vai perceber que para obter a lista de clientes
+ele vai precisar acessar o model, ele encaminha a requisição para o model, o model vai no BD e pega a lista de clientes,
+pega as indormações da lista de clientes e devolve essa lista para o controller, o controller nesse momento pode precisar de mais dados
+por exemplo a lista de clientes desativados, então ele vao no model de novo pega a lista de Clientes Desativados e devolve para
+o controller, e ele pode fazer esse fluxo diversas vezes, até que chegue uma hora que ele tem os dados necessários para renderizar
+a VIEW, ele pega passa esses dados para a view, a view usa esses dados como insumo para renderizar a resposta e após renderizar
+envia essa resposta para o browser
+
+Em outras palavras a requisição sempre chega pelo o controller, e a requisição sempre é devolvida ou seja a resposta/response é devolvida 
+pela view.
+
+
+## Pensando no Padrão MVC no Spring Boot
+
+![](src/main/resources/templates/cap3.png)
+
+**só não foi mostrado a view
+
+- O DispatcherServlet direciona as requisições dos usuários para os controladores de acordo com o mapeamento realizado 
+nestes últimos. Esses controladores interpretam a entrada do usuário (requisições) e transformam-na em um modelo que no 
+Spring MVC é representado pela Interface Model e suas implementações.
+
+## Criação do projeto
+
+model, composto pelo o package entities e repositories(o qual defini a interface de como você vai abstrair o acesso a dados)
+
+
+## Injeção de Depencencia
+
+Injeção de Dependencia é uma das possiveis causas de termos inversão de controle.
+
+IoC Inverse of Control -> D.I.(Dependency injection)
+
+             ___                  ___
+            |   |                |   |
+            | A |--------------> | B |
+            |___|                |___|
+              |
+              V
+        B b = new B();
+    
+    A é responsável por obter
+    uma instancia da classe B
+    Esse é um controle normal.
+
+            framework Spring
+        @RestControler
+         ___                  ___
+        |   |                |   |
+        | A |--------------> | B |
+        |___|                |___|
+          |
+          V
+        @Autowired
+        B b;
+
+    Ao invés de fazer uma instanciação 
+    eu uso a anotação @Autowired ou seja, 
+     eu quero que seja inserido uma instancia
+    do tipo da Classe B quem faz isso é o
+    framework reponsável pela Injeção de 
+    dependencia; Todos os Controles foram
+    criados/instanciados pelo o spring 
+    O Spring leu as anotações através do reflection
+    e através dessas anotações ele injeta algum objeto
+    e ele é capaz de fazer isso por que ele gerencia
+    essa classe.
+    Ou seja através das anotações o framework ele é responsável por procurar
+    a classe B, gerar as intancias, passa todos os atributos necessarios.
+    Ou seja após isso há uma inversão da sequencia normal , da lógica normal
+    que seria a classe que precisa da instanciação ser responsável por criar o objeto/instancias 
+    Já com a inversão de controle o spring é o responsável por fazer tudo isso.
+
