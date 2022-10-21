@@ -252,3 +252,31 @@ IoC Inverse of Control -> D.I.(Dependency injection)
     que seria a classe que precisa da instanciação ser responsável por criar o objeto/instancias 
     Já com a inversão de controle o spring é o responsável por fazer tudo isso.
 
+
+## Estudar api Validation  do java
+
+https://www.baeldung.com/javax-validation
+
+## Soft Delete
+https://www.baeldung.com/spring-jpa-soft-delete
+
+Soft delete é quando você não deleta o registro no BD fisicamente, é como se você criasse uma coluna a mais chamada deletado
+exemplo se estiver 0 não foi deletado e 1 deletado. ou data ele inclui a data de exclusão.
+
+## Convenção 
+
+https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#repositories.query-methods.query-property-expressions
+
+Quando você cria uma convenção por exemplo: find (o spring boot entende que será feito uma busca no BD  ou seja um select)
+
+O spring boot criou várias convenções que nos ajudam a criar métodos sem necessariamente implementá-los.
+
+    //pela convenção eu coloco o nome do atributo nesse caso vou buscar "nome"
+    //que Containin 
+    public Iterable<Produto> findByNomeContaininProdutos(String parteNome);
+
+Mas também podemos fazer através de JPQL
+Introduzindo a anotação @Query
+
+
+https://docs.spring.io/spring-data/jdbc/docs/2.2.4/reference/html/#jdbc.query-methods
